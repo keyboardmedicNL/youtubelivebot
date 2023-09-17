@@ -27,4 +27,10 @@ included are:
 3. save the file and launch the script youtubelivebot.py
 
 *you will need the actual channelID of the channel you want to monitor, not a handle like @youtube
+
+Optionally a dockerfile is included wich can be used to build a docker image or use the one on my repository with the following code
+
+```
+docker run -dit --name youtubelivebot -v /path/to/config:/usr/src/app/config -p <port for webserver>:<port defined in config> keyboardmedic/youtubelivebot:latest
+```
     
