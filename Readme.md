@@ -1,6 +1,8 @@
 # What it does
 This is a script i wrote so i can get notifications if certain channels go live on youtube, it check their live videos to a list of keywords and if it contains said keyword it posts a link to the video to a discord webhook. it automaticly calculates the time between polls to avoid getting rate limited. however the youtube api is very restrictive on quota's and at most you can poll every 15 minutes if you only check 1 channel
 
+the code itself is heavily commented so go ham and make it your own
+
 included are:
 - a post script that sends a http post to a watchdog server of your choosing, wich wont happen if the url is left blank in the config
 - a http webserver running to use for uptime monitoring by having an approachable url wich can be checked with something like uptime kuma
