@@ -26,7 +26,7 @@ included are:
     "webport": "port for simple webserver"
 }
 ```
-3. save the file and launch the script youtubelivebot.py
+3. input the correct data and launch the script youtubelivebot.py
 
 *you will need the actual channelID of the channel you want to monitor, not a handle like @youtube
 
