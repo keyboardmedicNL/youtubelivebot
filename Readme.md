@@ -35,4 +35,6 @@ Optionally a dockerfile is included wich can be used to build a docker image or 
 ```
 docker run -dit --name youtubelivebot -v /path/to/config:/usr/src/app/config -p <port for webserver>:<port defined in config> keyboardmedic/youtubelivebot:latest
 ```
+# disclaimer
+Scripts are written by an amateur, use at your own risk
     
