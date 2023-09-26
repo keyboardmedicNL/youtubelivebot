@@ -115,7 +115,7 @@ while True:
                             if videoIdToSent not in l:
                                 l.append(videoIdToSent)
                                 print(f"<YOUTUBELIVEBOT> posting video with id: {videoIdToSent}")
-                                discord_embed("Youtubelivebot",14081792,f"posting video with id: {videoIdToSent}")
+                                discord_embed("Youtubelivebot",703235,f"posting video with id: {videoIdToSent}")
                                 r = requests.post(webhookurl, data={"content": notificationmessage + "https://www.youtube.com/watch?v=" + videoIdToSent,}) # post to main webhook
                         else:
                             print(f"<YOUTUBELIVEBOT> Live video found but no pursuit on channel {channel}")
