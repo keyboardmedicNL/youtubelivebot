@@ -61,8 +61,8 @@ while webservercheck == False: # loop to ensure webserver gets loaded
             print("<YOUTUBELIVEBOT> starting webserver for local monitoring") 
             discord_embed("Youtubelivebot",14081792,"starting webserver for local monitoring")
     except Exception as e: 
-        print(f"An exception occurred whilst trying to read the config: {str(e)} waiting for 1 minute")
-        discord_embed("MonitorBotsBot",10159108,f"An exception occurred whilst trying to read the config: {str(e)} waiting for 1 minute")
+        print(f"An exception occurred whilst trying to start the webserver: {str(e)} waiting for 1 minute")
+        discord_embed("MonitorBotsBot",10159108,f"An exception occurred whilst trying to start the webserver: {str(e)} waiting for 1 minute")
         time.sleep(60)
 
 #post process to talk to remote monitor
@@ -79,8 +79,8 @@ while postcheck == False: # loop to ensure post gets loaded
                 print("<YOUTUBELIVEBOT> starting post server for remote monitoring")
                 discord_embed("Youtubelivebot",14081792,"starting post server for remote monitoring")
     except Exception as e: # catches exception
-        print(f"An exception occurred whilst trying to read the config: {str(e)} waiting for 1 minute")
-        discord_embed("MonitorBotsBot",10159108,f"An exception occurred whilst trying to read the config: {str(e)} waiting for 1 minute")
+        print(f"An exception occurred whilst trying to start the post server: {str(e)} waiting for 1 minute")
+        discord_embed("MonitorBotsBot",10159108,f"An exception occurred whilst trying to start the post server: {str(e)} waiting for 1 minute")
         time.sleep(60)
 
 # checks if name of video contains pursuit and if so posts video to webhook
@@ -127,6 +127,6 @@ while True:
         discord_embed("Youtubelivebot",14081792,f"waiting for {str(timeToPoll)} minutes")
         time.sleep(timeToSleep)
     except Exception as e: # catches exception
-        print(f"An exception occurred whilst trying to read the config: {str(e)} waiting for 1 minute")
-        discord_embed("MonitorBotsBot",10159108,f"An exception occurred whilst trying to read the config: {str(e)} waiting for 1 minute")
+        print(f"An exception occurred in main loop: {str(e)} waiting for 1 minute")
+        discord_embed("MonitorBotsBot",10159108,f"An exception occurred in main loop: {str(e)} waiting for 1 minute")
         time.sleep(60)
