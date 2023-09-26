@@ -18,16 +18,16 @@ l= []
 
 # formats embed for discord webhook and posts to url
 def discord_embed(title,color,description):
-    data = {"embeds": [
-            {
-                "title": title,
-                "color": color,
-                "description": description
-            }
-        ]}
-    rl = requests.post(webhooklogurl, json=data)
+    if webhooklogurl != "":
+        data = {"embeds": [
+                {
+                    "title": title,
+                    "color": color,
+                    "description": description
+                }
+            ]}
+        rl = requests.post(webhooklogurl, json=data)
 
-print('"')
 #pulls data from config
 while configfile == False: # loop to ensure config gets loaded, will retry if it fails
     try:

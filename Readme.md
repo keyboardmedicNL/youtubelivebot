@@ -6,6 +6,7 @@ the code itself is heavily commented so go ham and make it your own
 included are:
 - a post script that sends a http post to a watchdog server of your choosing, wich wont happen if the url is left blank in the config
 - a http webserver running to use for uptime monitoring by having an approachable url wich can be checked with something like uptime kuma
+- remote logging capabilities with use of a discord webhook where debugging messages get posted, wich wont happen if the url is left blank in the config
 
 
 # how to use
