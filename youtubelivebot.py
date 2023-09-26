@@ -16,11 +16,16 @@ l= []
 
 # functions used in script
 
-# sends log message in cleartext to defined wehbook in config
-def postToWebhook(rlurl, contentToSend):
-    if webhooklogurl != "": # checks wether or not url exsists in config and does not post if url is not present
-        rlf = requests.post(rlurl, data={"content": contentToSend })
-        print("<YOUTUBELIVEBOT> sending content to webhook: " + contentToSend)
+# formats embed for discord webhook and posts to url
+def discord_embed(title,color,description):
+    data = {"embeds": [
+            {
+                "title": title,
+                "color": color,
+                "description": description
+            }
+        ]}
+    rl = requests.post(webhooklogurl, json=data)
 
 print('"')
 #pulls data from config
@@ -37,11 +42,10 @@ while configfile == False: # loop to ensure config gets loaded, will retry if it
             channels = configJson["channels"]
             config.close() # closes config
         configfile = True # stops loop when loaded succesfully
-        print("<YOUTUBELIVEBOT> succesfully loaded config") # log message
-        postToWebhook(webhooklogurl, "<YOUTUBELIVEBOT> succesfully loaded config") # log message
-    except Exception as e: # catches exception
-        print("<YOUTUBELIVEBOT> An exception occurred whilst trying to load the config: ", str(e)) # log message
-        print("<YOUTUBELIVEBOT> trying again in 1 minute") # log message
+        print("<YOUTUBELIVEBOT> succesfully loaded config")
+        discord_embed("Youtubelivebot",14081792,"succesfully loaded config")
+    except Exception as e: 
+        print(f"An exception occurred whilst trying to read the config: {str(e)} waiting for 1 minute")
         time.sleep(60)
 
 #webserver for monitoring purposes
@@ -54,13 +58,11 @@ while webservercheck == False: # loop to ensure webserver gets loaded
             processThread = threading.Thread(target=thread_second)
             processThread.start()
             webservercheck = True # stops loop if succesfull
-            print("<YOUTUBELIVEBOT> starting webserver for local monitoring") # log message 
-            postToWebhook(webhooklogurl, "<YOUTUBELIVEBOT> starting webserver for local monitoring") # log message
-    except Exception as e: # catches exception
-        print("<YOUTUBELIVEBOT> An exception occurred whilst trying to start the webserver:", str(e)) # log message
-        print("<YOUTUBELIVEBOT> trying again in 1 minute") # log message
-        postToWebhook(webhooklogurl, "<YOUTUBELIVEBOT> An exception occurred whilst trying to start the webserver:" + str(e)) # log message
-        postToWebhook(webhooklogurl, "<YOUTUBELIVEBOT> trying again in 1 minute") # log message
+            print("<YOUTUBELIVEBOT> starting webserver for local monitoring") 
+            discord_embed("Youtubelivebot",14081792,"starting webserver for local monitoring")
+    except Exception as e: 
+        print(f"An exception occurred whilst trying to read the config: {str(e)} waiting for 1 minute")
+        discord_embed("MonitorBotsBot",10159108,f"An exception occurred whilst trying to read the config: {str(e)} waiting for 1 minute")
         time.sleep(60)
 
 #post process to talk to remote monitor
@@ -74,13 +76,11 @@ while postcheck == False: # loop to ensure post gets loaded
                 processThread = threading.Thread(target=thread_third)
                 processThread.start()
                 postcheck = True # stops loop if succesfull
-                print("<YOUTUBELIVEBOT> starting post server for remote monitoring") # log message
-                postToWebhook(webhooklogurl, "<YOUTUBELIVEBOT> starting post server for remote monitoring") # log message
+                print("<YOUTUBELIVEBOT> starting post server for remote monitoring")
+                discord_embed("Youtubelivebot",14081792,"starting post server for remote monitoring")
     except Exception as e: # catches exception
-        print("<YOUTUBELIVEBOT> An exception occurred whilst trying to start the post server:", str(e)) # log message
-        print("<YOUTUBELIVEBOT> trying again in 1 minute") # log message
-        postToWebhook(webhooklogurl, "<YOUTUBELIVEBOT> An exception occurred whilst trying to start the post server:" + str(e)) # log message
-        postToWebhook(webhooklogurl, "<YOUTUBELIVEBOT> trying again in 1 minute") # log message
+        print(f"An exception occurred whilst trying to read the config: {str(e)} waiting for 1 minute")
+        discord_embed("MonitorBotsBot",10159108,f"An exception occurred whilst trying to read the config: {str(e)} waiting for 1 minute")
         time.sleep(60)
 
 # checks if name of video contains pursuit and if so posts video to webhook
@@ -93,15 +93,15 @@ while True:
         timeToPoll= 1440 / channelCount / 100 
         timeToPoll= math.ceil(timeToPoll)
         timeToSleep = timeToPoll * 60
-        print('<YOUTUBELIVEBOT> time between polls is ' + str(timeToPoll) + " minutes") # log message
-        postToWebhook(webhooklogurl, "<YOUTUBELIVEBOT> time between polls is " + str(timeToPoll) + " minutes") # log message
+        print(f"<YOUTUBELIVEBOT> time between polls is {str(timeToPoll)} minutes")
+        discord_embed("Youtubelivebot",14081792,f"time between polls is {str(timeToPoll)} minutes")
         for channel in channels: # loop checks all channels in config and searches for video titles matching defined keywords in config
-            print('<YOUTUBELIVEBOT> polling channel ' + channel)
-            postToWebhook(webhooklogurl, '<YOUTUBELIVEBOT> polling channel ' + channel)
+            print(f"<YOUTUBELIVEBOT> polling channel {channel}")
+            discord_embed("Youtubelivebot",14081792,f"polling channel {channel}")
             r = requests.get('https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=' + channel, '&eventType=live&type=video&key=' + youtubeApiKey)
             request = r
-            print("<YOUTUBELIVEBOT> request response is "+ str(request))
-            postToWebhook(webhooklogurl, "<YOUTUBELIVEBOT> request response is " + str(request)) # log message
+            print(f"<YOUTUBELIVEBOT> request response is {str(request)}")
+            discord_embed("Youtubelivebot",14081792,f"request response is {str(request)}")
             if "200" in str(request): # checks if get request was succesfull
                 jstring = request.json()
                 itemCount= 0
@@ -114,21 +114,19 @@ while True:
                             videoIdToSent = item["id"]["videoId"]
                             if videoIdToSent not in l:
                                 l.append(videoIdToSent)
-                                print("<YOUTUBELIVEBOT> posting video with id: " + videoIdToSent) # log message
-                                postToWebhook(webhooklogurl, "<YOUTUBELIVEBOT> posting video with id: " + videoIdToSent) # log message
+                                print(f"<YOUTUBELIVEBOT> posting video with id: {videoIdToSent}")
+                                discord_embed("Youtubelivebot",14081792,f"posting video with id: {videoIdToSent}")
                                 r = requests.post(webhookurl, data={"content": notificationmessage + "https://www.youtube.com/watch?v=" + videoIdToSent,}) # post to main webhook
                         else:
-                            print("<YOUTUBELIVEBOT> Live video found but no pursuit on channel " + channel) # log message
-                            postToWebhook(webhooklogurl, "<YOUTUBELIVEBOT> Live video found but no pursuit on channel " + channel) # log message
+                            print(f"<YOUTUBELIVEBOT> Live video found but no pursuit on channel {channel}")
+                            discord_embed("Youtubelivebot",14081792,f"Live video found but no pursuit on channel {channel}")
                 else:
-                    print("<YOUTUBELIVEBOT> no live videos found for channel " + channel) # log message
-                    postToWebhook(webhooklogurl, "<YOUTUBELIVEBOT> no live videos found for channel " + channel) # log message
-        print("<YOUTUBELIVEBOT> waiting for " + str(timeToPoll) + " minutes") # log message
-        postToWebhook(webhooklogurl, "<YOUTUBELIVEBOT> waiting for " + str(timeToPoll) + " minutes") # log message
+                    print(f"<YOUTUBELIVEBOT> no live videos found for channel {channel}")
+                    discord_embed("Youtubelivebot",14081792,f"no live videos found for channel {channel}")
+        print(f"<YOUTUBELIVEBOT> waiting for {str(timeToPoll)} minutes")
+        discord_embed("Youtubelivebot",14081792,f"waiting for {str(timeToPoll)} minutes")
         time.sleep(timeToSleep)
     except Exception as e: # catches exception
-        print("<YOUTUBELIVEBOT> An exception occurred in main loop:", str(e)) # log message
-        print("<YOUTUBELIVEBOT> trying again in 1 minute") # log message
-        postToWebhook(webhooklogurl, "<YOUTUBELIVEBOT> An exception occurred in main loop:" + str(e)) # log message
-        postToWebhook(webhooklogurl, "<YOUTUBELIVEBOT> trying again in 1 minute") # log message
+        print(f"An exception occurred whilst trying to read the config: {str(e)} waiting for 1 minute")
+        discord_embed("MonitorBotsBot",10159108,f"An exception occurred whilst trying to read the config: {str(e)} waiting for 1 minute")
         time.sleep(60)
