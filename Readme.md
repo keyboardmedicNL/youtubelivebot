@@ -28,8 +28,8 @@ included are:
 }
 ```
 3. input the correct data and launch the script youtubelivebot.py
-
-*you will need the actual channelID of the channel you want to monitor, not a handle like @youtube
+* leave optional entries blank if you do not intent to use them but do include them otherwise the script will throw an error
+* you will need the actual channelID of the channel you want to monitor, not a handle like @youtube
 
 Optionally a dockerfile is included wich can be used to build a docker image or use the one on my repository with the following code
 
