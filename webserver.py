@@ -2,6 +2,7 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import time
 import json
+import requests
 
 #variables used in script
 configcheck=False
