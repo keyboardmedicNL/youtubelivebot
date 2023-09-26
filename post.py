@@ -9,14 +9,15 @@ configcheck = False
 
 # formats embed for discord webhook and posts to url
 def discord_embed(title,color,description):
-    data = {"embeds": [
-            {
-                "title": title,
-                "color": color,
-                "description": description
-            }
-        ]}
-    rl = requests.post(webhooklogurl, json=data)
+    if webhooklogurl != "":
+        data = {"embeds": [
+                {
+                    "title": title,
+                    "color": color,
+                    "description": description
+                }
+            ]}
+        rl = requests.post(webhooklogurl, json=data)
 
 # loads needed data from config to variables
 while configcheck == False: # loop to ensure config gets loaded
