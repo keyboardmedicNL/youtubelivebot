@@ -10,8 +10,9 @@ included are:
 
 
 # how to use
-1. place all contents in a folder and make a "config" folder.
-2. make a config.json and copy the text below into the file 
+1. install python on your system from the python website https://www.python.org/downloads/
+2. place all contents in a folder and make a "config" folder.
+3. make a config.json and copy the text below into the file 
 ```
 {
     "youtubeApiKey": "youtubedataAPIkey",
@@ -27,7 +28,7 @@ included are:
     "webport": "port for simple webserver"
 }
 ```
-3. input the correct data and launch the script youtubelivebot.py
+4. input the correct data and launch the script youtubelivebot.py
 * leave optional entries blank if you do not intent to use them but do include them otherwise the script will throw an error
 * you will need the actual channelID of the channel you want to monitor, not a handle like @youtube
 
