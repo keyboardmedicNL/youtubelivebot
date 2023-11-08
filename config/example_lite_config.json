@@ -1,0 +1,8 @@
+{
+    "youtube_api_key": "YOUR_YOUTUBE_API_KEY",
+    "discord_webhook_url": "URL_TO_YOU_DISCORD_WEBHOOK_TO_POST_LINKS_TO",
+    "word_list": ["list", "of", "words", "to", "match"],
+    "ignore_list": ["list", "of", "words", "to", "ignore"],
+    "notification_message": "message to post with the link",
+    "channels": ["channelid1","channelid2"]
+}

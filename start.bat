@@ -1,2 +1,3 @@
 @echo off
-python "youtubelivebot" youtubelivebot.py
+python youtubelivebot.py
+pause
