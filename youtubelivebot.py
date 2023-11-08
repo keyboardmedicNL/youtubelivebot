@@ -8,17 +8,13 @@ from os.path import exists
 from subprocess import call
 
 #variables used in script
-configfile=False
-channelsfile=False
-webservercheck=False
-postcheck=False
 l= []
 
 # functions used in script
 
 # formats embed for discord webhook and posts to url
-def discord_embed(title,color,description):
-    if webhooklogurl != "":
+def discord_log(title,color,description):
+    if use_discord_logs.lower() == "true":
         data = {"embeds": [
                 {
                     "title": title,
@@ -26,109 +22,89 @@ def discord_embed(title,color,description):
                     "description": description
                 }
             ]}
-        rl = requests.post(webhooklogurl, json=data)
+        rl = requests.post(discord_log_webhook, json=data)
+        time.sleep(1)
 
 #pulls data from config
-while configfile == False: # loop to ensure config gets loaded, will retry if it fails
-    try:
-        with open("config/config.json") as config: # opens config and stores values in variables
-            configJson = json.load(config)
-            youtubeApiKey = configJson["youtubeApiKey"]
-            webhookurl = configJson["webhookurl"]
-            webhooklogurl = configJson["webhooklogurl"]
-            webhookmonitorurl = configJson["webhookmonitorurl"]
-            wordlist = configJson["wordlist"]
-            notificationmessage = configJson["notificationmessage"]
-            channels = configJson["channels"]
-            config.close() # closes config
-        configfile = True # stops loop when loaded succesfully
-        print("<YOUTUBELIVEBOT> succesfully loaded config")
-        discord_embed("Youtubelivebot",14081792,"succesfully loaded config")
-    except Exception as e: 
-        print(f"An exception occurred whilst trying to read the config: {str(e)} waiting for 1 minute")
-        time.sleep(60)
+with open("config/config.json") as config: # opens config and stores values in variables
+    config_json = json.load(config)
+    youtube_api_key = config_json["youtube_api_key"]
+    discord_webhook_url = config_json["discord_webhook_url"]
+    word_list = config_json["word_list"]
+    notification_message = config_json["notification_message"]
+    channels = config_json["channels"]
+    use_web_server = config_json["use_web_server"]
+    use_remote_post = config_json["use_remote_post"]
+    use_discord_logs = config_json["use_discord_logs"]
+    if use_discord_logs.lower() == "true":
+        discord_log_webhook = config_json["discord_remote_log_url"]
+print("succesfully loaded config")
+discord_log("Youtubelivebot",14081792,"succesfully loaded config")
 
 #webserver for monitoring purposes
-while webservercheck == False: # loop to ensure webserver gets loaded
-    try:
-        file_exists = exists("webserver.py")
-        if file_exists == True: # check added so exception actually triggers
-            def thread_second(): # start webserver.py as a second threat to allow it to run parallel with main script
-                call(["python", "webserver.py"])
-            processThread = threading.Thread(target=thread_second)
-            processThread.start()
-            webservercheck = True # stops loop if succesfull
-            print("<YOUTUBELIVEBOT> starting webserver for local monitoring") 
-            discord_embed("Youtubelivebot",14081792,"starting webserver for local monitoring")
-    except Exception as e: 
-        print(f"An exception occurred whilst trying to start the webserver: {str(e)} waiting for 1 minute")
-        discord_embed("MonitorBotsBot",10159108,f"An exception occurred whilst trying to start the webserver: {str(e)} waiting for 1 minute")
-        time.sleep(60)
+if use_web_server.lower() == "true":
+    def thread_second():
+        call(["python", "webserver.py"])
+    process_thread = threading.Thread(target=thread_second)
+    process_thread.start()
+    print("starting webserver for local monitoring") 
+    discord_log("Youtubelivebot",14081792,"starting webserver for local monitoring")
 
 #post process to talk to remote monitor
-while postcheck == False: # loop to ensure post gets loaded
-    try:
-        file_exists = exists("post.py")
-        if file_exists == True: # check added so exception actually triggers
-            if webhookmonitorurl != "":
-                def thread_third(): # start post.py as a third threat to allow it to run parallel with main script
-                    call(["python", "post.py"])
-                processThread = threading.Thread(target=thread_third)
-                processThread.start()
-                postcheck = True # stops loop if succesfull
-                print("<YOUTUBELIVEBOT> starting post server for remote monitoring")
-                discord_embed("Youtubelivebot",14081792,"starting post server for remote monitoring")
-            else:
-                postcheck = True # stops loop if succesfull
-    except Exception as e: # catches exception
-        print(f"An exception occurred whilst trying to start the post server: {str(e)} waiting for 1 minute")
-        discord_embed("MonitorBotsBot",10159108,f"An exception occurred whilst trying to start the post server: {str(e)} waiting for 1 minute")
-        time.sleep(60)
+if use_remote_post.lower() == "true":
+    def thread_third():
+        call(["python", "post.py"])
+    process_thread = threading.Thread(target=thread_third)
+    process_thread.start()
+    print("starting post server for remote monitoring")
+    discord_log("Youtubelivebot",14081792,"starting post server for remote monitoring")
 
 # checks if name of video contains pursuit and if so posts video to webhook
 while True: 
     try:
         # calculates minimum time between api calls to avoid rate limiting
-        channelCount= 0 
+        channel_count= 0 
         for channel in channels: 
-            channelCount= channelCount + 1
-        timeToPoll= 1440 / channelCount / 100 
-        timeToPoll= math.ceil(timeToPoll)
-        timeToSleep = timeToPoll * 60
-        print(f"<YOUTUBELIVEBOT> time between polls is {str(timeToPoll)} minutes")
-        discord_embed("Youtubelivebot",14081792,f"time between polls is {str(timeToPoll)} minutes")
-        for channel in channels: # loop checks all channels in config and searches for video titles matching defined keywords in config
-            print(f"<YOUTUBELIVEBOT> polling channel {channel}")
-            discord_embed("Youtubelivebot",14081792,f"polling channel {channel}")
-            r = requests.get('https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=' + channel, '&eventType=live&type=video&key=' + youtubeApiKey)
+            channel_count= channel_count + 1
+        time_to_poll= 1440 / channel_count / 100 
+        time_to_poll= math.ceil(time_to_poll)
+        time_to_sleep = time_to_poll * 60
+        print(f"time between polls is {str(time_to_poll)} minutes")
+        discord_log("Youtubelivebot",14081792,f"time between polls is {str(time_to_poll)} minutes")
+        # loop checks all channels in config and searches for video titles matching defined keywords in config
+        for channel in channels: 
+            print(f"polling channel {channel}")
+            discord_log("Youtubelivebot",14081792,f"polling channel {channel}")
+            r = requests.get('https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=' + channel, '&eventType=live&type=video&key=' + youtube_api_key)
             request = r
-            print(f"<YOUTUBELIVEBOT> request response is {str(request)}")
-            discord_embed("Youtubelivebot",14081792,f"request response is {str(request)}")
-            if "200" in str(request): # checks if get request was succesfull
-                jstring = request.json()
-                itemCount= 0
-                for item in jstring["items"]:
-                    itemCount = itemCount + 1
-                if itemCount > 0:
-                    for item in jstring["items"]: 
+            print(f"request response is {str(request)}")
+            discord_log("Youtubelivebot",14081792,f"request response is {str(request)}")
+            # checks if get request was succesfull
+            if "200" in str(request): 
+                yt_api_json = request.json()
+                item_count= 0
+                for item in yt_api_json["items"]:
+                    item_count = item_count + 1
+                if item_count > 0:
+                    for item in yt_api_json["items"]: 
             # checks if videos found contain keywords
-                        if any(s in (item["snippet"]["title"].lower()) for s in wordlist): # check video titles against keyword list
-                            videoIdToSent = item["id"]["videoId"]
-                            if videoIdToSent not in l:
-                                l.append(videoIdToSent)
-                                print(f"<YOUTUBELIVEBOT> posting video with id: {videoIdToSent}")
-                                discord_embed("Youtubelivebot",703235,f"posting video with id: {videoIdToSent}")
-                                r = requests.post(webhookurl, data={"content": notificationmessage + "https://www.youtube.com/watch?v=" + videoIdToSent,}) # post to main webhook
+                        if any(s in (item["snippet"]["title"].lower()) for s in word_list):
+                            video_id_to_send = item["id"]["videoId"]
+                            if video_id_to_send not in l:
+                                l.append(video_id_to_send)
+                                print(f"posting video with id: {video_id_to_send}")
+                                discord_log("Youtubelivebot",703235,f"posting video with id: {video_id_to_send}")
+                                r = requests.post(discord_webhook_url, data={"content": notification_message + "https://www.youtube.com/watch?v=" + video_id_to_send,})
                         else:
-                            print(f"<YOUTUBELIVEBOT> Live video found but no pursuit on channel {channel}")
-                            discord_embed("Youtubelivebot",14081792,f"Live video found but no pursuit on channel {channel}")
+                            print(f"Live video found but no pursuit on channel {channel}")
+                            discord_log("Youtubelivebot",14081792,f"Live video found but no pursuit on channel {channel}")
                 else:
                     print(f"<YOUTUBELIVEBOT> no live videos found for channel {channel}")
-                    discord_embed("Youtubelivebot",14081792,f"no live videos found for channel {channel}")
-        print(f"<YOUTUBELIVEBOT> waiting for {str(timeToPoll)} minutes")
-        discord_embed("Youtubelivebot",14081792,f"waiting for {str(timeToPoll)} minutes")
-        time.sleep(timeToSleep)
+                    discord_log("Youtubelivebot",14081792,f"no live videos found for channel {channel}")
+        print(f"<YOUTUBELIVEBOT> waiting for {str(time_to_poll)} minutes")
+        discord_log("Youtubelivebot",14081792,f"waiting for {str(time_to_poll)} minutes")
+        time.sleep(time_to_sleep)
     except Exception as e: # catches exception
         print(f"An exception occurred in main loop: {str(e)} waiting for 1 minute")
-        discord_embed("MonitorBotsBot",10159108,f"An exception occurred in main loop: {str(e)} waiting for 1 minute")
+        discord_log("youtubelivebot",10159108,f"An exception occurred in main loop: {str(e)} waiting for 1 minute")
         time.sleep(60)
