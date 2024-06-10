@@ -5,7 +5,7 @@ This is a script i wrote so i can get notifications if certain channels go live 
 
 **the script currently comes with 2 versions:**   
 - the lite version, wich just contains the script to check for livestreams and posts them to discord aswell.    
-- the full version, wich contains the script, the option to send log messages to a discord webhook for easy remote monitoring and a simple webserver that can be pinged to monitor uptime, aswell as simple remote post service that will send a http post to an adress of your chosing with a configurable timer with the json ```{'name': "bot_name", 'time': "unix timestamp of current time in utc"}``` all of this can be toggled on or off in the config
+- the full version, wich contains the script, the option to send log messages to a discord webhook for easy remote monitoring and a simple webserver that can be pinged to monitor uptime, aswell as simple remote post service that will send a http post to an adress of your chosing with a configurable timer with the json ```{'name': "bot_name", 'time': "unix timestamp of current time in utc"}``` and the option to send a message to your gotify server if an error occurs, all of this can be toggled on or off in the config
 
 
 
@@ -45,6 +45,10 @@ full:
     "remote_http_server_url": "http://google.com",
     "bot_name": "NAME_OF_YOUR_BOT_FOR_REMOTE_POST",
     "post_interval": "time in minutes to post to remote post"
+    "ping_id": "user or group id from discord to ping when an error occurs",
+    "use_gotify": "true or false",
+    "gotifyurl": "your gotify server url",
+    "verbose:": "0, 1 or 2 (0 is basic logging, 1 is extensive logging, 2 is extensive logging with remote logging responses)"
 }
 ```
 5. launch the script
