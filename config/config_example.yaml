@@ -1,0 +1,11 @@
+"youtube_api_key": YOUR_YOUTUBE_API_KEY
+"discord_webhook_url": YOUR_DISCORD_WEBHOOK_URL
+"word_list": # list of words you want the bot to post if they are in the title of the video
+- space
+- cool
+"ignore_list": # list of words you want the bot to not post if they are in the title of the video
+- high
+- low
+"notification_message": YOUR_DISCORD_NOTIFICATION_MESSAGE
+"channels": # list of youtube channel id's to check for livestreams
+- UCLA_DiR1FfKNvjuUpBHmylQ

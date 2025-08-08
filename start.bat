@@ -1,3 +1,3 @@
 @echo off
-python youtubelivebot.py
+python src\youtube_live.py
 pause

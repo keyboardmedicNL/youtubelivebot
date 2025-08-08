@@ -1,1 +1,4 @@
 /config/config.json
+/config/config.yaml
+*.log
+__pycache__
