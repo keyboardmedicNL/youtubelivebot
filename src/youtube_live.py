@@ -7,19 +7,24 @@ import math
 import sys
 import config_loader
 import logging
+import requests_error_handler
 
 #variables
 
 config = config_loader.load_config()
 
-max_errors_allowed = 3
-error_retry_timeout = 30
+init_error_handler = requests_error_handler.init_error_handler
+handle_response_not_ok = requests_error_handler.handle_response_not_ok
+handle_request_exception = requests_error_handler.handle_request_exception
+raise_no_more_tries_exception = requests_error_handler.raise_no_more_tries_exception
+
 list_of_posted_videos= []
 
 def get_livestreams_from_youtube(channel: str) -> dict:
 
     logging.info("polling channel %s", channel)
-    error_count = 0
+
+    error_retry_timeout, max_errors_allowed, error_count = init_error_handler()
 
     while error_count < max_errors_allowed:
 
@@ -31,22 +36,21 @@ def get_livestreams_from_youtube(channel: str) -> dict:
                 return(youtube_response)
             
             else:
-                error_count = error_count+1
-                remaining_errors = max_errors_allowed-error_count
-
+                error_count, remaining_errors = handle_response_not_ok(error_count)
+                logging.error("tried to get livestreams from youtube with response %s trying %s more times and waiting for %s seconds",youtube_response ,remaining_errors, error_retry_timeout)
+                
                 if not error_count == max_errors_allowed:
-                    logging.error("tried to get livestreams from youtube with response %s trying %s more times and waiting for %s seconds",youtube_response ,remaining_errors, error_retry_timeout)
                     time.sleep(error_retry_timeout)
-        except Exception as e:
-            error_count = error_count+1
-            remaining_errors = max_errors_allowed-error_count
 
+        except Exception as e:
+            error_count, remaining_errors = handle_request_exception(error_count)
+            logging.error("unable to request live streams from youtube with exception %s trying %s more times and waiting %s seconds",e ,remaining_errors, error_retry_timeout)
+            
             if not error_count == max_errors_allowed:
-                logging.error("unable to request live streams from youtube with exception %s trying %s more times and waiting %s seconds",e ,remaining_errors, error_retry_timeout)
                 time.sleep(error_retry_timeout)
 
     if error_count == max_errors_allowed:
-        raise RuntimeError(f"tried to get livestreams from youtube {max_errors_allowed} times and failed")
+        raise_no_more_tries_exception(max_errors_allowed)
 
 def check_if_livestream_to_post(livestream_data: dict) -> str:
     parsed_livestream_data = livestream_data.json()
@@ -78,7 +82,7 @@ def check_if_livestream_to_post(livestream_data: dict) -> str:
 
 def send_video_to_discord(video_id: str):
 
-    error_count = 0
+    error_retry_timeout, max_errors_allowed, error_count = init_error_handler()
 
     while error_count < max_errors_allowed:
 
@@ -91,23 +95,21 @@ def send_video_to_discord(video_id: str):
                 break
             
             else:
-                error_count = error_count+1
-                remaining_errors = max_errors_allowed-error_count
-
+                error_count, remaining_errors = handle_response_not_ok(error_count)
+                logging.error("tried to posting video to discord with response %s trying %s more times and waiting for %s seconds",discord_webhook_response ,remaining_errors, error_retry_timeout)
+                
                 if not error_count == max_errors_allowed:
-                    logging.error("tried to posting video to discord with response %s trying %s more times and waiting for %s seconds",discord_webhook_response ,remaining_errors, error_retry_timeout)
                     time.sleep(error_retry_timeout)
 
         except Exception as e:
-            error_count = error_count+1
-            remaining_errors = max_errors_allowed-error_count
-
+            error_count, remaining_errors = handle_request_exception(error_count)
+            logging.error("unable to post video to discord with exception %s trying %s more times and waiting %s seconds",e ,remaining_errors, error_retry_timeout)
+            
             if not error_count == max_errors_allowed:
-                logging.error("unable to post video to discord with exception %s trying %s more times and waiting %s seconds",e ,remaining_errors, error_retry_timeout)
                 time.sleep(error_retry_timeout)
 
     if error_count == max_errors_allowed:
-        raise RuntimeError(f"tried post video to discord {max_errors_allowed} times and failed")
+        raise_no_more_tries_exception(max_errors_allowed)
 
 def main():
 
