@@ -2,6 +2,12 @@ import yaml
 import logging
 
 default_config = {
+    "youtube_api_key": "",
+    "discord_webhook_url": "",
+    "word_list": [],
+    "ignore_list": [],
+    "notification_message": "", 
+    "channels": []
 }
 
 # loads config from file

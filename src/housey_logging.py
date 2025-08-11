@@ -4,7 +4,7 @@ import logging
 def configure():
     logging.basicConfig(
         format='%(asctime)s %(levelname)s: [%(module)s.%(funcName)s:%(lineno)d]: %(message)s',
-        filename='./youtube_live.log',
+        filename='./config/youtube_live.log',
         level=logging.INFO
     )
 
