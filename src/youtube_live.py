@@ -8,6 +8,7 @@ import sys
 import config_loader
 import logging
 import requests_error_handler
+import color_picker
 
 #variables
 
@@ -17,6 +18,8 @@ init_error_handler = requests_error_handler.init_error_handler
 handle_response_not_ok = requests_error_handler.handle_response_not_ok
 handle_request_exception = requests_error_handler.handle_request_exception
 raise_no_more_tries_exception = requests_error_handler.raise_no_more_tries_exception
+
+pick_random_color = color_picker.pick_random_color
 
 list_of_posted_videos= []
 
@@ -73,22 +76,33 @@ def check_if_livestream_to_post(livestream_data: dict) -> str:
 
                 if video_id_to_send not in list_of_posted_videos:
                     list_of_posted_videos.append(video_id_to_send)
+                    title = item["snippet"]["title"]
+                    thumbnail = item["snippet"]["thumbnails"]["high"]["url"]
                     logging.info("found video matching criteria with id: %s", video_id_to_send)
 
-                    send_video_to_discord(video_id_to_send)
+                    send_video_to_discord(video_id_to_send, title, thumbnail)
                     
             else:
                 logging.info("Live video found but it did not match the criteria")
 
-def send_video_to_discord(video_id: str):
+def send_video_to_discord(video_id: str, title: str, thumbnail: str):
 
     error_retry_timeout, max_errors_allowed, error_count = init_error_handler()
 
     while error_count < max_errors_allowed:
 
         try:
+            data_to_send_to_webhook = {"content": config.notification_message,"embeds": [
+                                    {
+                                    "title": f":red_circle: {title}",
+                                    "url": f"https://www.youtube.com/watch?v={video_id}",
+                                    "color": pick_random_color("decimal"),
+                                    "image": {
+                                    "url": thumbnail,
+                                    }
+                                    }]}
 
-            discord_webhook_response = requests.post(config.discord_webhook_url, data={"content": config.notification_message + "https://www.youtube.com/watch?v=" + video_id,})
+            discord_webhook_response = requests.post(config.discord_webhook_url, json= data_to_send_to_webhook)
 
             if discord_webhook_response.ok:
                 logging.info("posted video to discord with id: %s with response: %s",video_id ,discord_webhook_response)
