@@ -41,4 +41,6 @@ docker run -dit --name youtubelivebot -v /path/to/config:/usr/src/app/config key
 
 # disclaimer
 Scripts are written by an amateur, use at your own risk
+
+the only vibe used in this code is background drum and bass
     
