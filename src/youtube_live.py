@@ -133,8 +133,8 @@ def main():
     while True:
 
         # calculates minimum time between api calls to avoid rate limiting
-        time_between_poll = math.ceil(1440 * len(config.channels) / 100)
-        time_between_poll_minutes = time_between_poll * 60
+        time_between_poll_minutes = math.ceil(1440 * len(config.channels) / 100)
+        time_between_poll_seconds = time_between_poll_minutes * 60
         logging.info("calculated time between polls is %s minutes", time_between_poll_minutes)
 
         # loop checks all config.channels in config and searches for video titles matching defined keywords in config
@@ -144,7 +144,7 @@ def main():
             check_if_livestream_to_post(youtube_response)
 
         logging.info("waiting for %s minutes",str(time_between_poll_minutes))
-        time.sleep(time_between_poll_minutes)
+        time.sleep(time_between_poll_seconds)
 
 if __name__ == "__main__":
     main()
